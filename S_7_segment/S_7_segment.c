@@ -1,23 +1,3 @@
-/*
-
- 문자 디바이스 만들기!!
- 커널 내부의 디바이스 는 3가지 존재
-
-1. character device (문자 디바이스)
-- 파일처럼 바이트 스트림(stream)으로 접근(read/write) 할수 있는 디바이스
--커널안에 있기도하며 모듈로 추가할 수 있다
-
-2. block device
--하드디스크처럼 내부에 파일 시스템을 가질 수 있는 디바이스
--마운트된 특정 파일 시스템의 파일에 접근할 때, 블록 디바이스 드라이버와 상호 동작하게 됨
--즉 디렉토리와 같이 블록단위로  하드디스크에 접근해야하는 경우 블록디바이스 드라이버를 통해서 제어된다(질문할것)
-
-3. network device
--모든 네트워크의 동작은 네트워크 인터페이스를 통해 이루어진다
-
-
- */
-
 #include <linux/fs.h> //struct file_operation
 #include <linux/cdev.h> //charactor device
 #include <linux/io.h>
@@ -29,14 +9,155 @@
 
 #define GPIO_MAJOR 200
 #define GPIO_MINOR 0
-#define GPIO_DEVICE "gpioled"
-#define GPIO_LED 18
+#define GPIO_DEVICE "segled"
+#define A 16 
+#define B 12
+#define C 13
+#define D 19
+#define E 26
+#define F 20
+#define G 21
+#define DP 6
 #define BLK_SIZE 100
+
+int PIN[8]={A,B,C,D,E,F,G,DP};
+/*
+void digital_0(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,0);
+	gpio_set_value(C,0);
+	gpio_set_value(D,0);
+	gpio_set_value(E,0);
+	gpio_set_value(F,0);
+	gpio_set_value(G,1);
+	gpio_set_value(DP,1);
+}
+
+void digital_1(void)
+{
+	gpio_set_value(A,1);
+	gpio_set_value(B,0);
+	gpio_set_value(C,0);
+	gpio_set_value(D,1);
+	gpio_set_value(E,1);
+	gpio_set_value(F,1);
+	gpio_set_value(G,1);
+	gpio_set_value(DP,1);
+}
+
+void digital_2(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,0);
+	gpio_set_value(C,1);
+	gpio_set_value(D,0);
+	gpio_set_value(E,0);
+	gpio_set_value(F,1);
+	gpio_set_value(G,0);
+	gpio_set_value(DP,1);
+}
+
+void digital_3(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,0);
+	gpio_set_value(C,0);
+	gpio_set_value(D,0);
+	gpio_set_value(E,1);
+	gpio_set_value(F,1);
+	gpio_set_value(G,0);
+	gpio_set_value(DP,1);
+}
+
+void digital_4(void)
+{
+	gpio_set_value(A,1);
+	gpio_set_value(B,0);
+	gpio_set_value(C,0);
+	gpio_set_value(D,1);
+	gpio_set_value(E,1);
+	gpio_set_value(F,0);
+	gpio_set_value(G,0);
+	gpio_set_value(DP,1);
+}
+
+void digital_5(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,1);
+	gpio_set_value(C,0);
+	gpio_set_value(D,0);
+	gpio_set_value(E,1);
+	gpio_set_value(F,0);
+	gpio_set_value(G,0);
+	gpio_set_value(DP,1);
+}
+
+void digital_6(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,1);
+	gpio_set_value(C,0);
+	gpio_set_value(D,0);
+	gpio_set_value(E,0);
+	gpio_set_value(F,0);
+	gpio_set_value(G,0);
+	gpio_set_value(DP,1);
+}
+
+void digital_7(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,0);
+	gpio_set_value(C,0);
+	gpio_set_value(D,1);
+	gpio_set_value(E,1);
+	gpio_set_value(F,1);
+	gpio_set_value(G,1);
+	gpio_set_value(DP,1);
+}
+
+void digital_8(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,0);
+	gpio_set_value(C,0);
+	gpio_set_value(D,0);
+	gpio_set_value(E,0);
+	gpio_set_value(F,0);
+	gpio_set_value(G,0);
+	gpio_set_value(DP,1);
+}
+
+void digital_9(void)
+{
+	gpio_set_value(A,0);
+	gpio_set_value(B,0);
+	gpio_set_value(C,0);
+	gpio_set_value(D,0);
+	gpio_set_value(E,1);
+	gpio_set_value(F,0);
+	gpio_set_value(G,0);
+	gpio_set_value(DP,1);
+}*/
+
+int DISP[10][8] = {	{0,0,0,0,0,0,1,1},
+				{1,0,0,1,1,1,1,1},
+				{0,0,1,0,0,1,0,1},
+				{0,0,0,0,1,1,0,1},
+				{1,0,0,1,1,0,0,1},
+				{0,1,0,0,1,0,0,1},
+				{0,1,0,0,0,0,0,1},
+				{0,0,0,1,1,1,1,1},
+				{0,0,0,0,0,0,0,1},
+				{0,0,0,0,1,0,0,1}
+				};
+
 
 /*
 //라즈베리파이 GPIO  물리메모리
 #define BCM_IO_BASE 0x3F000000
-
 //GPIO_BaseAddr
 #define GPIO_BASE (BCM_IO_BASE + 0x200000) 
  
@@ -50,7 +171,6 @@
 #define GPIO_SET(g) (*(gpio+7) = (1<<g))
 //                  addr(200028)
 #define GPIO_CLR(g) (*(gpio+10) = (1<<g))
-
 #define GPIO_GET(g) (*(gpio+13)&(1<<g))
 #define GPIO_SIZE 0xB4
 */
@@ -92,18 +212,15 @@ static int gpio_close(struct inode *inod, struct file *fil)
 	printk(KERN_INFO "GPIO Device closed\n");
 	return 0;
 }
-
-//gpio 값을 읽어들여 msg 에 저장하고 유자단의 buff로 보내준다
-
 						//파일의 위치	어떤버퍼를 읽어올지 , 읽어올 사이즈 ,버퍼의 오프셋값
 static ssize_t gpio_read(struct file *fil, char *buff, size_t len, loff_t *off) //user 단으로 데이터 전송
 {
 	int count;
-	if(gpio_get_value(GPIO_LED)) //gpio_get_value = 현재 gpio 의 값을 읽어옴
+	/*if(gpio_get_value(GPIO_LED)) //gpio_get_value = 현재 gpio 의 값을 읽어옴
 			msg[0]='1';
 	else
-			msg[1]='0';
-	strcat(msg," from kernel"); // print msg + from kernel
+			msg[1]='0';*/
+	strcat(msg,"  ->  from kernel message"); // print msg + from kernel
 	count = copy_to_user(buff,msg,strlen(msg)+1); //유저단에 msg 보내줌 +1 은  널문자
 	
 	printk(KERN_INFO "GPIO Device read: %s\n",msg);
@@ -112,41 +229,25 @@ static ssize_t gpio_read(struct file *fil, char *buff, size_t len, loff_t *off) 
 	
 }
 
-
-//copy_from_user를 이용해 유저단의 송신 buff를 가져와서 msg에 저장
 static ssize_t gpio_write(struct file *fil, char const *buff, size_t len, loff_t *off)
 {
 	int count;
+	int i=0;
+	int value;
 	memset(msg, 0, BLK_SIZE);
 
 	count = copy_from_user(msg,buff,len); //유저단의 buff가져옴
-	gpio_set_value(GPIO_LED, (strcmp(msg, "0"))); //gpio 에 값을 써줌
+	value=simple_strtol(msg,NULL,10); //문자열을 정수로
+	for(;i<8;i++)
+	{
+		gpio_set_value(PIN[i],DISP[value][i]);
+	}
 
 	printk(KERN_INFO "GPIO Device write: %s\n", msg);
 
 	return count;
 }
 
-
-/*
-	init 동작과정
-	
-	1.문자 디바이스 드라이버 등록 
-	  MKDEV(MAJOR,MINOR 생성 ) -> register_chrdev_region (MAJOR,MINOR 등록)
-	
-    2.문자 디바이스를 위한 구조체를 초기화
-	  cdev_init (디바이스를 초기화 하고, 사용자가 생성한 fops를 생성한 cdve의 struct file_operation에 등록
-	  gpio_cdev.owner = THIS_MODULE  file_operation에 설정한 owner값을 넣어준다
-
-	3.문자디바이스를 추가
-	  cdev_add 커널의 드라이버에 문자 디바이스를 추가한다
-	
-	
-	*나중에 /dev/ 에 등록된 장치의 MAJOR 번호에 따른 file_operation 을 mapping한다
-
-	4.gpio 사용 요청한다
-	  gpio_request
-*/
 static int __init initModule(void)
 {
 	dev_t devno; //dev_t 디바이스 파일의 MAJOR , MINOR 번호를 지정하기 위한 변수타입(32bit)
@@ -163,7 +264,6 @@ static int __init initModule(void)
 
 
 /*
-
 	register_chrdev_region() :  문자디바이스를 등록한다
 	
 	함수의 동작과정
@@ -180,7 +280,6 @@ static int __init initModule(void)
 	
 	cdev 구조체 내의 내용들을 char_device_struct에서 골라서 복사(alloc)
 	=> 커널에서 char_device_struct를 공개하지 않고 cdev만 공개 , 사용하도록하기 위함
-
 */
 
 
@@ -201,7 +300,14 @@ static int __init initModule(void)
 	printk(KERN_INFO "'sudo mknod /dev/%s c %d 0'\n",GPIO_DEVICE, GPIO_MAJOR);
 	printk(KERN_INFO "'sudo chmod 666 /dev/%s'\n",GPIO_DEVICE);
 	//현재 GPIO_LED핀이 사용중인지 확인하고 사용권한 획득
-	err= gpio_request(GPIO_LED, "LED"); 
+	err= gpio_request(A, "A");
+	gpio_request(B,"B");
+	gpio_request(C,"C");
+	gpio_request(D,"D");
+	gpio_request(E,"E");
+	gpio_request(F,"F");
+	gpio_request(G,"G");
+	gpio_request(DP,"DP");
 	
 	if(err==-EBUSY)
 	{
@@ -211,7 +317,6 @@ static int __init initModule(void)
 	/* =
 	//4. 물리메모리 번지로 인자값을 전달하면 가상메모리 번지를 리턴 (ioremap)
 	map = ioremap(GPIO_BASE, GPIO_SIZE);
-
 	if(!map)
 	{
 		printk(KERN_INFO "Error: mapping GPIO memory\n");
@@ -222,11 +327,19 @@ static int __init initModule(void)
 #ifdef DEBUG
 	printk(KERN_INFO "devno=%d",devno);
 #endif
-
 	gpio = (volatile unsigned int*)map;
 	*/
 
-	gpio_direction_output(GPIO_LED,0); //gpio select function= output ,pin =GPIOLED (18), gpio_value=0
+	gpio_direction_output(A,1); 
+	gpio_direction_output(B,1); 
+	gpio_direction_output(C,1); 
+	gpio_direction_output(D,1); 
+	gpio_direction_output(E,1); 
+	gpio_direction_output(F,1); 
+	gpio_direction_output(G,1); 
+	gpio_direction_output(DP,1); 
+	
+	//gpio select function= output ,pin =GPIOLED (18), gpio_value=0
 										//chipset 회사에서 이러한 함수를 지원해줌으로서 우리가 직접적으로 register를 건들이지 않아도 된다
 /* = GPIO_OUT(GPIO_LED);
 	 //GPIO_CLR(GPIO_LED); //프로그램이 시작될때 led를 꺼놓고 시작  
@@ -235,27 +348,29 @@ static int __init initModule(void)
 	return 0;
 }
 
-
-/*
-   
-  1. gpio request 사용권한 반납
- 
-  2. unregister_chrdev_region 문자디바이스 등록해제
- 
-  3. cdev_del 문자디바이스 구조체를 제거 cdev_add 했엇던..
-
- 
- */
-
 static void __exit cleanupModule(void)
 {
 	dev_t devno = MKDEV(GPIO_MAJOR,GPIO_MINOR);
 	
-	gpio_direction_output(GPIO_LED,0);
+	gpio_direction_output(A,1);
+	gpio_direction_output(B,1);
+	gpio_direction_output(C,1);
+	gpio_direction_output(D,1);
+	gpio_direction_output(E,1);
+	gpio_direction_output(F,1);
+	gpio_direction_output(G,1);
+	gpio_direction_output(DP,1);
 	//=GPIO_CLR(GPIO_LED);
 
 	//gpio_request()에서 받아온 사용권한을 반납한다.
-	gpio_free(GPIO_LED);
+	gpio_free(A);
+	gpio_free(B);
+	gpio_free(C);
+	gpio_free(D);
+	gpio_free(E);
+	gpio_free(F);
+	gpio_free(G);
+	gpio_free(DP);
 	
 	// 1. 문자디바이스 등록 해제
 	unregister_chrdev_region(devno,1);
