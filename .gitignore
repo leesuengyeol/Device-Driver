@@ -1,0 +1,6 @@
+.*.swp
+.*.cmd
+*.o
+*.stnvers
+*.order
+*.ko
