@@ -133,6 +133,7 @@ static ssize_t gpio_write(struct file *fil, char const *buff, size_t len, loff_t
 	
 	1.문자 디바이스 드라이버 등록 
 	  MKDEV(MAJOR,MINOR 생성 ) -> register_chrdev_region (MAJOR,MINOR 등록)
+									=kernel의 char D.D Table에 저장함
 	
     2.문자 디바이스를 위한 구조체를 초기화
 	  cdev_init (디바이스를 초기화 하고, 사용자가 생성한 fops를 생성한 cdve의 struct file_operation에 등록
@@ -164,7 +165,7 @@ static int __init initModule(void)
 
 /*
 
-	register_chrdev_region() :  문자디바이스를 등록한다
+	register_chrdev_region() :  문자디바이스를 등록한다(kernel의 char D.D Table에 저장된다)
 	
 	함수의 동작과정
 	1. struct char_device_struct 생성 -> 2. __register_chrdev_region() 문자디바이스 등록 -> 3. cdev_alloc()
@@ -190,7 +191,7 @@ static int __init initModule(void)
 	gpio_cdev.owner = THIS_MODULE;
 	count=1;
 
-	//3. 문자디바이스를 추가
+	//3. 문자디바이스를 추가				//초기화된 fops를 추가
 	err=cdev_add(&gpio_cdev, devno,count); // 커널의 드라이버에 추가
 											//내부적으로 kobj_map()를 이용해 실제 디바이스 구조체와 디바이스 번호를 연결
 	if(err<0)
