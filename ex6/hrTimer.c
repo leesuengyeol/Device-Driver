@@ -1,6 +1,3 @@
-//high-resolution timer
-
-
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -13,16 +10,36 @@ static struct hrtimer hr_timer;
 
 enum hrtimer_restart my_hrtimer_callback( struct hrtimer *timer )
 {
-    pr_info( "my_hrtimer_callback called (%ld).\n", jiffies );
-    return HRTIMER_NORESTART;
+    ktime_t currtime, interval;
+    static int count=0;
+    unsigned long delay_in_ms = 10L;	//100ms
+
+	//1AEEA A¨ú¡¤a
+    if(count==10)
+    {
+    	pr_info( "my_hrtimer_callback is done (%ld).\n", jiffies );
+    	return HRTIMER_NORESTART;
+    }
+    else
+    {
+    	count++;
+    	pr_info("count=%d\n",count);
+
+	currtime = ktime_get();
+	interval = ktime_set(0, MS_TO_NS(delay_in_ms));
+	hrtimer_forward(timer, currtime, interval);
+	return HRTIMER_RESTART;
+    }
+
 }
- 
+
+
 static int hrt_init_module( void )
 {
     ktime_t ktime;
-    unsigned long delay_in_ms = 200L;
 
-    pr_info("HR Timer module installing\n");	//	= printk(KERN_INFO " " )
+    unsigned long delay_in_ms = 10L;  //100ms
+    pr_info("HR Timer module installing\n");
 
     /*
      * ktime = ktime_set(0, 200 * 1000 * 1000);
