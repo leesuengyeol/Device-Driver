@@ -1,3 +1,4 @@
+//Single 7_segment
 #include <linux/fs.h> //struct file_operation
 #include <linux/cdev.h> //charactor device
 #include <linux/io.h>
@@ -195,6 +196,8 @@ static struct file_operations gpio_fops={
 	.release = gpio_close,
 };
 
+
+/*open ,close 인터넷 참조 : https://damduc.tistory.com/170 */
 //						inode주소 			file 정보 주소 를 인자로
 static int gpio_open(struct inode *inod, struct file *fil) //file_operation 과 함수이름 맞춰줘야한다!!
 {
