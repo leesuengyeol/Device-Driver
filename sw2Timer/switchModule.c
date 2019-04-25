@@ -118,7 +118,7 @@ static irqreturn_t isr_func(int irq, void *data)
 	//MS_TO_NS(delay_in_ms)
 	unsigned long expireTime = 100000000L; //50ms unit:ns
 	
-	unsigned long stopwatchTime = 1L; //10ms
+	unsigned long stopwatchTime = 1L; 
 
 	static struct siginfo sinfo;
 
