@@ -1,4 +1,4 @@
-#kernel dircetory
+#kernel directory
 KDIR = /lib/modules/$(shell uname -r)/build
 
 obj-m := S_7_segment.o
